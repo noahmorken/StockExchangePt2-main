@@ -1,0 +1,43 @@
+body{
+    margin: 0;
+    padding: 0;
+    font-family:'Times New Roman', Times, serif;
+    background-color: #eee;
+}
+
+*{
+    box-sizing: border-box;
+}
+
+form{
+    display: block;
+    background-color: #fff;
+    box-shadow: 1px 1px 3px 2px #ddd;
+    margin: 40px auto;
+    max-width: 600px;
+    max-height: 700px;
+    padding: 20px;
+}
+
+form input, textarea{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 10px auto;
+    padding: 10px;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+form span{
+    color: rgb(29, 185, 237);
+}
+
+form button{
+    height: 30px;
+    width: 80px;
+    align-items: center;
+    border: none;
+    background-color: rgb(29, 185, 237);
+    color: #fff;
+    cursor: pointer;
+}
