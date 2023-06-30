@@ -1,25 +1,29 @@
 import React, { useState } from 'react'
 import './SubmissionForm.css'
-import Dropdown from "./Dropdown";
+// import Dropdown from "./Dropdown";
 
 const SubmissionForm = () => {
     const [name, setName] = useState('');
-    const [setVariation] = useState('');
+    const [variation, setVariation] = useState('');
     const [intro, setIntro] = useState('');
     const [ingredient, setIngredient] = useState('');
-    const [setIngredientQuantity] = useState('');
-    const [setIngredientUOM] = useState('');
+    const [ingredientQuantity, setIngredientQuantity] = useState('');
+    const [ingredientUOM, setIngredientUOM] = useState('');
     const [step, setStep] = useState('');
     const [status, setStatus] = useState('');
     const [gluten, setGluten] = useState('');
     const [dairy, setDairy] = useState('');
-    const [selected, setSelected] = useState("");
+    // const [selected, setSelected] = useState("");
+    const [selectedRadioBtn, setSelectedRadioBtn] = useState('');
     const [ingredientList, setIngredientList] = useState([{
         ingredient: "", ingredient_quantity: "", ingredient_uom: ""
     }]);
     const [stepList, setStepList] = useState([{
         step: ""
     }]);
+
+    const isRadioSelected = (value: string): boolean => selectedRadioBtn === value;
+    const handleRadioClick = (e: React.ChangeEvent<HTMLInputElement>): void => setSelectedRadioBtn(e.currentTarget.value);
 
     const handleChange = e => {
         if (e.target.id === "add_ingredient" && ingredientList.length < 20) {
@@ -47,6 +51,26 @@ const SubmissionForm = () => {
     }
 
     const handleSubmit = () => {
+        if (!gluten && !dairy) {
+            setVariation(1);
+        }
+        else if (gluten && !dairy) {
+            setVariation(2);
+        }
+        else if (!gluten && dairy) {
+            setVariation(3);
+        }
+        else {
+            setVariation(4);
+        }
+
+        if (status === "Public") {
+            setStatus(1);
+        }
+        else {
+            setStatus(2);
+        }
+
         if(name.length === 0) {
             alert("Title cannot be blank!");
         }
@@ -59,31 +83,41 @@ const SubmissionForm = () => {
         else if(step.length === 0) {
             alert("Steps cannot be blank!");
         }
+        else if(status === "Choose One") {
+            alert("Status cannot be blank!")
+        }
         else{
             alert("All set!");
-            
-            if (!gluten && !dairy) {
-                setVariation(1);
-            }
-            else if (gluten && !dairy) {
-                setVariation(2);
-            }
-            else if (!gluten && dairy) {
-                setVariation(3);
-            }
-            else {
-                setVariation(4);
-            }
+            //ingredientList.ingredientUOM.replace(/[^a-z]/gi, '');
 
-            if (status === "Public") {
-                setStatus(1);
-            }
-            else {
-                setStatus(2);
-            }
-
-            fetch('http://localhost:8180/recipe/add')
+            fetch('http://localhost:8180/recipe/add',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({name, intro, ingredientList, stepList, status, variation})
+                }
+            )
             .then((response) => response.json());
+
+
+            // const formData  = new FormData();
+            // formData.append("name", name);
+            // formData.append("intro", intro);
+            // formData.append("ingredientList", ingredientList);
+            // formData.append("stepList", stepList);
+            // formData.append("status", status);
+            // formData.append("variation", variation);
+
+            // fetch('http://localhost:8180/recipe/add',
+            //     {
+            //         method: 'POST',
+            //         body: formData
+            //     }
+            // )
+            // .then((response) => response.json());
         }
     }
 
@@ -93,32 +127,35 @@ const SubmissionForm = () => {
             <input type="text" name="recipe" id="" placeholder="Recipe Title" value={name} onChange={(e) => setName(e.target.value)} />
             <textarea name="intro" id="" cols="30" rows="10" placeholder="Introduction" value={intro} onChange={(e) => setIntro(e.target.value)} />
 
-            <button type="button" id="add_ingredient" onClick={(handleChange)}>Add Ingredient</button>
-            <button type="button" id="remove_ingredient" onClick={(handleChange)}>Remove Ingredient</button>
-
             {ingredientList.map((item, i) => {
             return (
                 <div key={i} className="ingredientBox">
-                    <textarea name="ingredient" id="" pattern="/[^a-z]/gi" placeholder="Ingredient" value={item.ingredient} onChange={(e) => setIngredient(e.target.value)} />
-                    <textarea name="ingredient_quantity" id="" pattern="/[a-z]/gi" placeholder="Ingredient Quantity" value={item.ingredient_quantity} onChange={(e) => setIngredientQuantity(e.target.value)} />
-                    <textarea name="ingredient_uom" id="" pattern="/[^a-z]/gi" placeholder="Ingredient Unit of Measurement" value={item.ingredient_uom} onChange={(e) => setIngredientUOM(e.target.value)} />
+                    <textarea name="ingredient" id="" placeholder="Ingredient" value={ingredient} onChange={(e) => setIngredient(e.target.value)} />
+                    <input type="number" name="ingredient_quantity" id="" placeholder="Ingredient Quantity" value={ingredientQuantity} onChange={(e) => setIngredientQuantity(e.target.value)} />
+                    <input type="text" name="ingredient_uom" id="" placeholder="Ingredient Unit of Measurement" value={ingredientUOM} onChange={(e) => setIngredientUOM(e.target.value)} />
                 </div>
             )})}
 
-            <button type="button" id="add_step" onClick={(handleChange)}>Add Step</button>
-            <button type="button" id="remove_step" onClick={(handleChange)}>Remove Step</button>
+            <button type="button" id="add_ingredient" style={{visibility: ingredientList.length === 20 ? "hidden" : "visible"}} onClick={(handleChange)}>Add Ingredient</button>
+            <button type="button" id="remove_ingredient" style={{visibility: ingredientList.length === 1 ? "hidden" : "visible"}} onClick={(handleChange)}>Remove Ingredient</button>
 
             {stepList.map((item, i) => {
             return (
                 <div key={i} className="stepBox">
-                    <textarea name="step" id="" cols="30" rows="10" placeholder="Step" value={item.step} onChange={(e) => setStep(e.target.value)} />
+                    <textarea name="step" id="" cols="30" rows="10" placeholder="Step" value={step} onChange={(e) => setStep(e.target.value)} />
                 </div>
             )})}
 
-            <Dropdown selected={selected} setSelected={setSelected} value={selected} onChange={(e) => setStatus(e.target.value)} />
+            <button type="button" id="add_step" style={{visibility: stepList.length === 20 ? "hidden" : "visible"}} onClick={(handleChange)}>Add Step</button>
+            <button type="button" id="remove_step" style={{visibility: stepList.length === 1 ? "hidden" : "visible"}} onClick={(handleChange)}>Remove Step</button>
+
+            {/* <Dropdown selected={selected} setSelected={setSelected} value={selected} onChange={(e) => setStatus(e.target.value)} /> */}
+            <h2>Visibility</h2>
+            <input type="radio" name="public" value="radio1" checked={isRadioSelected('radio1')} onChange={handleRadioClick} /> Public
+            <input type="radio" name="private" value="radio2" checked={isRadioSelected('radio2')} onChange={handleRadioClick} /> Private
             <input type="checkbox" value={gluten} onChange={(e) => setGluten(e.target.value)} /> Gluten Free?
             <input type="checkbox" value={dairy} onChange={(e) => setDairy(e.target.value)} /> Dairy Free?
-            <button type="submit" name="send" id="send" value ="SEND" onClick={(handleSubmit)}>Send</button>
+            <button type="button" name="send" id="send" value ="SEND" onClick={(handleSubmit)}>Send</button>
             
         </form>
     )
