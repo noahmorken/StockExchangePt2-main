@@ -127,8 +127,8 @@ const SubmissionForm = () => {
             return (
                 <div key={i} className="ingredientBox">
                     <textarea name="ingredient" id="" placeholder="Ingredient" value={ingredient[item]} onChange={(e) => setIngredient(e.target.value)} />
-                    <input type="number" name="ingredient_quantity" id="" placeholder="Ingredient Quantity" value={ingredientQuantity} onChange={(e) => setIngredientQuantity(e.target.value)} />
-                    <input type="text" name="ingredient_uom" id="" placeholder="Ingredient Unit of Measurement" value={ingredientUOM} onChange={(e) => setIngredientUOM(e.target.value)} />
+                    <input type="number" name="ingredient_quantity" id="" placeholder="Ingredient Quantity" value={ingredientQuantity[item]} onChange={(e) => setIngredientQuantity(e.target.value)} />
+                    <input type="text" name="ingredient_uom" id="" placeholder="Ingredient Unit of Measurement" value={ingredientUOM[item]} onChange={(e) => setIngredientUOM(e.target.value)} />
                 </div>
             )})}
 
