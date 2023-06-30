@@ -13,17 +13,13 @@ const SubmissionForm = () => {
     const [status, setStatus] = useState('');
     const [gluten, setGluten] = useState('');
     const [dairy, setDairy] = useState('');
-    // const [selected, setSelected] = useState("");
-    const [selectedRadioBtn, setSelectedRadioBtn] = useState('');
+    const [selected, setSelected] = useState('');
     const [ingredientList, setIngredientList] = useState([{
         ingredient: "", ingredient_quantity: "", ingredient_uom: ""
     }]);
     const [stepList, setStepList] = useState([{
         step: ""
     }]);
-
-    const isRadioSelected = (value: string): boolean => selectedRadioBtn === value;
-    const handleRadioClick = (e: React.ChangeEvent<HTMLInputElement>): void => setSelectedRadioBtn(e.currentTarget.value);
 
     const handleChange = e => {
         if (e.target.id === "add_ingredient" && ingredientList.length < 20) {
@@ -64,7 +60,7 @@ const SubmissionForm = () => {
             setVariation(4);
         }
 
-        if (status === "Public") {
+        if (selected === "Public") {
             setStatus(1);
         }
         else {
@@ -130,7 +126,7 @@ const SubmissionForm = () => {
             {ingredientList.map((item, i) => {
             return (
                 <div key={i} className="ingredientBox">
-                    <textarea name="ingredient" id="" placeholder="Ingredient" value={ingredient} onChange={(e) => setIngredient(e.target.value)} />
+                    <textarea name="ingredient" id="" placeholder="Ingredient" value={ingredient[item]} onChange={(e) => setIngredient(e.target.value)} />
                     <input type="number" name="ingredient_quantity" id="" placeholder="Ingredient Quantity" value={ingredientQuantity} onChange={(e) => setIngredientQuantity(e.target.value)} />
                     <input type="text" name="ingredient_uom" id="" placeholder="Ingredient Unit of Measurement" value={ingredientUOM} onChange={(e) => setIngredientUOM(e.target.value)} />
                 </div>
@@ -142,7 +138,7 @@ const SubmissionForm = () => {
             {stepList.map((item, i) => {
             return (
                 <div key={i} className="stepBox">
-                    <textarea name="step" id="" cols="30" rows="10" placeholder="Step" value={step} onChange={(e) => setStep(e.target.value)} />
+                    <textarea name="step" id="" cols="30" rows="10" placeholder="Step" value={step[item]} onChange={(e) => setStep(e.target.value)} />
                 </div>
             )})}
 
@@ -151,10 +147,10 @@ const SubmissionForm = () => {
 
             {/* <Dropdown selected={selected} setSelected={setSelected} value={selected} onChange={(e) => setStatus(e.target.value)} /> */}
             <h2>Visibility</h2>
-            <input type="radio" name="public" value="radio1" checked={isRadioSelected('radio1')} onChange={handleRadioClick} /> Public
-            <input type="radio" name="private" value="radio2" checked={isRadioSelected('radio2')} onChange={handleRadioClick} /> Private
-            <input type="checkbox" value={gluten} onChange={(e) => setGluten(e.target.value)} /> Gluten Free?
-            <input type="checkbox" value={dairy} onChange={(e) => setDairy(e.target.value)} /> Dairy Free?
+            <input type="radio" name="selected" value="radio1" onChange={e=>setSelected(e.target.value)} />Public
+            <input type="radio" name="selected" value="radio2" onChange={e=>setSelected(e.target.value)} />Private
+            <input type="checkbox" value={gluten} onChange={(e) => setGluten(e.target.value)} />Gluten Free?
+            <input type="checkbox" value={dairy} onChange={(e) => setDairy(e.target.value)} />Dairy Free?
             <button type="button" name="send" id="send" value ="SEND" onClick={(handleSubmit)}>Send</button>
             
         </form>
