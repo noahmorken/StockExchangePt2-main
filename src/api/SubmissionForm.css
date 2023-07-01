@@ -14,7 +14,7 @@ form{
     box-shadow: 1px 1px 3px 2px #ddd;
     margin: 40px auto;
     max-width: 600px;
-    max-height: 700px;
+    max-height: 1100px auto;
     padding: 20px;
 }
 
