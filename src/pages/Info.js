@@ -1,36 +1,25 @@
 import React, { useState } from "react";
-import './FetchApi.css'
+import Header from '../Header'
+import { useParams } from 'react-router-dom';
 
-function FetchAPI() {
-    const [hidden, setHidden] = useState(true);
+export default function Info() {
+    const { recipe_id } = useParams();
     const [data, setData] = useState([]);
-    const apiGet = () => {
-        fetch('http://localhost:8180/recipe/list')
+    const recipeGet = () => {
+        fetch('http://localhost:8180/recipe/{recipe_id}')
         .then((response) => response.json())
         .then((json) => {
             // console.log(json);
-            setData(json[json.length-1]);
-            setHidden(!hidden);
+            setData(json);
         });
 //        setState();
-
     };
 
-    // const state = {
-    //     showMessage: false
-    // }
-    // function setState() {
-    //     this.setState({showMessage: !this.state.showMessage});
-    // }
-
     return (
-        <div>
-            My API <br />
-            <button onClick={apiGet}>Fetch API</button>
-            <br />
-            {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
-            <pre hidden={hidden} >
-                <p>Recipe ID: {data.id}</p>
+        <>
+            <Header link={"info"} />
+            <h2>Recipe Information</h2>
+            <p>Recipe ID: {data.id}</p>
                 <p>Variation ID: {data.variation}</p>
                 <p>Date: {data.date}</p>
                 <p>Name: {data.name}</p>
@@ -90,16 +79,6 @@ function FetchAPI() {
                         </>
                     </ul>
                 </div>
-            </pre>
-            <div>
-                {/* <ul>
-                    {data.map((item) => (
-                        <li key={item.id}>{item.user},{item.title}</li>
-                    ))}
-                    </ul>*/}
-            </div>
-        </div>
+        </>
     );
 }
-
-export default FetchAPI;

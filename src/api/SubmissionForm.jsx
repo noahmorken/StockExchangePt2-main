@@ -9,23 +9,23 @@ const SubmissionForm = () => {
     // const [ingredient, setIngredient] = useState([]);
     // const [ingredientQuantity, setIngredientQuantity] = useState([]);
     // const [ingredientUOM, setIngredientUOM] = useState([]);
-    const [step, setStep] = useState('');
+    // const [step, setStep] = useState('');
     //const [status, setStatus] = useState('');
     const [gluten, setGluten] = useState(false);
     const [dairy, setDairy] = useState(false);
     const [selected, setSelected] = useState('');
     const [ingredients, setIngredients] = useState([{
-        ingredient: "", ingredient_quantity: "", ingredient_uom: ""
+        ingredient_order: "", ingredient: "", ingredient_quantity: "", ingredient_uom: ""
     }]);
     const [steps, setSteps] = useState([{
-        step: ""
+        step_order: "", step: ""
     }]);
 
     const handleChange = e => {
         if (e.target.id === "add_ingredient" && ingredients.length < 20) {
             setIngredients([
                 ...ingredients,
-                {ingredient: "", ingredient_quantity: "", ingredient_uom: ""}
+                {ingredient_order: "", ingredient: "", ingredient_quantity: "", ingredient_uom: ""}
             ])
         }
         if (e.target.id === "remove_ingredient" && ingredients.length > 1) {
@@ -36,7 +36,7 @@ const SubmissionForm = () => {
         if (e.target.id === "add_step" && steps.length < 20) {
             setSteps([
                 ...steps,
-                {step: ""}
+                {step_order: "", step: ""}
             ])
         }
         if (e.target.id === "remove_step" && steps.length > 1) {
@@ -60,12 +60,14 @@ const SubmissionForm = () => {
             status = 2;
         }
 
-        var ingredients = [];
-        console.log("Ingredient:" + ingredient);
+        // var ingredients = [];
+        for (let i = 0; i < ingredients.length; i++) {
+            console.log("Ingredient:" + JSON.stringify(ingredients[i]));
+        }
 
-        var stepList = new Array([step.length]);
-        for (let i = 0; i < step.length; i++) {
-            stepList[i] = step[i];
+        var stepList = new Array([steps.length]);
+        for (let i = 0; i < steps.length; i++) {
+            stepList[i] = steps[i];
         }
 
         if(name.length === 0) {
@@ -74,10 +76,10 @@ const SubmissionForm = () => {
         else if(intro.length === 0) {
             alert("Intro cannot be blank!");
         }
-        else if(ingredient.length === 0) {
+        else if(ingredients.length === 0) {
             alert("Ingredients cannot be blank!");
         }
-        else if(step.length === 0) {
+        else if(steps.length === 0) {
             alert("Steps cannot be blank!");
         }
         else if(status === "Choose One") {
@@ -88,7 +90,7 @@ const SubmissionForm = () => {
             
 
             //ingredients.ingredientUOM.replace(/[^a-z]/gi, '');
-
+            console.log(ingredients);
             fetch('http://localhost:8180/recipe/add',
                 {
                     method: 'POST',
@@ -96,10 +98,17 @@ const SubmissionForm = () => {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({name, intro, ingredient, stepList, status, variation})
+                    body: JSON.stringify({name, intro, ingredients, steps, status, variation})
                 }
             )
-            .then((response) => response.json());
+            .then(response => {
+                if (!response.ok) {
+                    alert("An error occured.");
+                }
+                else {
+                    alert("Recipe added!");
+                }
+            });
 
 
             // const formData  = new FormData();
@@ -120,18 +129,52 @@ const SubmissionForm = () => {
         }
     }
 
-    function handleIngredientUpdate(updateIndex, value) {
+    function handleIngredientUpdate(updateIndex, field, value) {
         const nextIngredients = ingredients.map((currElement, index) => {
             if (updateIndex === index) {
-                var i =  currElement.ingredient_quantity;
+                console.log("curr ing:" + JSON.stringify(currElement));
+                var ing =  currElement.ingredient;
+                var num =  currElement.ingredient_quantity;
                 var uom = currElement.ingredient_uom;
-                return { value, i, uom };
+                if (field === "ing") {
+                    return { "ingredient_order": index, "ingredient": value, "ingredient_quantity": num, "ingredient_uom": uom };
+                }
+                else if (field === "num") {
+                    return { "ingredient_order": index, "ingredient": ing, "ingredient_quantity": value, "ingredient_uom": uom };
+                }
+                else if (field === "unit") {
+                    return { "ingredient_order": index, "ingredient": ing, "ingredient_quantity": num, "ingredient_uom": value };
+                }
+                else {
+                    return { "ingredient_order": index, "ingredient": ing, "ingredient_quantity": num, "ingredient_uom": uom };
+                }
             }
             else {
                 return currElement;
             }
         });
+        console.log("next ing:" + JSON.stringify(nextIngredients));
         setIngredients(nextIngredients);
+    }
+
+    function handleStepUpdate(updateIndex, field, value) {
+        const nextSteps = steps.map((currElement, index) => {
+            if (updateIndex === index) {
+                console.log("curr step:" + JSON.stringify(currElement));
+                var des =  currElement.step;
+                if (field === "step") {
+                    return { "step_order": index, "step": value };
+                }
+                else {
+                    return { "step_order": index , "step": des };
+                }
+            }
+            else {
+                return currElement;
+            }
+        });
+        console.log("next step:" + JSON.stringify(nextSteps));
+        setSteps(nextSteps);
     }
 
     return (
@@ -145,9 +188,11 @@ const SubmissionForm = () => {
             return (
                 <div key={i} className="ingredientBox">
                     <textarea name="ingredient" placeholder="Ingredient" value={item.ingredient}
-                            onChange={(e) => handleIngredientUpdate(i, e.target.value)} />
-                    <input type="number" name="ingredient_quantity" placeholder="Ingredient Quantity" value={item.ingredient_quantity} onChange={(e) => setIngredientQuantity(e.target.value)} />
-                    <input type="text" name="ingredient_uom" placeholder="Ingredient Unit of Measurement" value={item.ingredient_uom} onChange={(e) => setIngredientUOM(e.target.value)} />
+                            onChange={(e) => handleIngredientUpdate(i, "ing", e.target.value)} />
+                    <input type="number" name="ingredient_quantity" placeholder="Ingredient Quantity"
+                            value={item.ingredient_quantity} onChange={(e) => handleIngredientUpdate(i, "num", e.target.value)} />
+                    <input type="text" name="ingredient_uom" placeholder="Ingredient Unit of Measurement"
+                            value={item.ingredient_uom} onChange={(e) => handleIngredientUpdate(i, "unit", e.target.value)} />
                     {/* <textarea name="ingredient" id="" placeholder="Ingredient" value={ingredient[item]} onChange={(e) => setIngredient(e.target.value)} />
                     <input type="number" name="ingredient_quantity" id="" placeholder="Ingredient Quantity" value={ingredientQuantity[item]} onChange={(e) => setIngredientQuantity(e.target.value)} />
                     <input type="text" name="ingredient_uom" id="" placeholder="Ingredient Unit of Measurement" value={ingredientUOM[item]} onChange={(e) => setIngredientUOM(e.target.value)} /> */}
@@ -161,7 +206,8 @@ const SubmissionForm = () => {
             {steps.map((item, i) => {
             return (
                 <div key={i} className="stepBox">
-                    <textarea name="step" id="" cols="30" rows="10" placeholder="Step" value={step[item]} onChange={(e) => setStep(e.target.value)} />
+                    <textarea name="step" id="" cols="30" rows="10" placeholder="Step"
+                            value={item.step} onChange={(e) => handleStepUpdate(i, "step", e.target.value)} />
                 </div>
             )})}
 
