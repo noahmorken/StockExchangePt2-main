@@ -1,55 +1,99 @@
-import React, { useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import './FetchList.css'
+import axios from "axios";
+import { useTable } from "react-table";
 
 function FetchList() {
     const [hidden, setHidden] = useState(true);
     const [data, setData] = useState([]);
     const listGet = () => {
-        fetch('http://localhost:8180/recipe/list')
-        .then((response) => response.json())
-        .then((json) => {
-            // console.log(json);
-            setData(json);
-            setHidden(!hidden);
-        });
+        setHidden(!hidden);
     };
+
+    useEffect(() => {
+        (async () => {
+            const result = await axios("http://localhost:8180/recipe/list");
+            setData(result.data);
+            console.log(result.data);
+        })();
+    }, []);
+
+    const columns = useMemo(
+        () => [
+            {
+                // First group - Recipe ID
+                Header: "Recipe",
+                // First group columns
+                columns: [
+                    {
+                        Header: "Recipe ID",
+                        accessor: "id",
+                    },
+                    {
+                        Header: "Variation ID",
+                        accessor: "variation",
+                    },
+                ],
+            },
+            {
+                // Second group - Details
+                Header: "Details",
+                // Second group columns
+                columns: [
+                    {
+                        Header: "Title",
+                        accessor: "name",
+                    },
+                    {
+                        Header: "Date Created",
+                        accessor: "date",
+                    },
+                ],
+            },
+        ],
+        []
+    );
+
+    const {
+        getTableProps,
+        getTableBodyProps,
+        headerGroups,
+        rows,
+        prepareRow
+    } = useTable({
+        columns,
+        data
+    });
 
     return (
         <div>
-            My List <br />
+            All Recipes <br />
             <button onClick={listGet}>Fetch List</button>
             <br />
-            {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
             <pre hidden={hidden} >
-                <div>All recipes:
-                    <ul>
-                        <>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Recipe Number:</th>
-                                        <th>Variation Number:</th>
-                                        <th>Title:</th>
-                                        <th>Date Created:</th>
-                                    </tr>
-                                </thead>
-                                {data && data.map((item) => {
-                                    console.log("recipe: "+item);
-                                    return (
-                                        <tbody>
-                                            <tr onClick={'http://localhost:8180/recipe/info' + item}>
-                                                <td>{item.id}</td>
-                                                <td>{item.variation}</td>
-                                                <td>{item.name}</td>
-                                                <td>{item.date}</td>
-                                            </tr>
-                                        </tbody>
-                                    )
-                                })}
-                            </table>
-                        </>
-                    </ul>
-                </div>
+                <table {...getTableProps()}>
+                    <thead>
+                        {headerGroups.map(headerGroup => (
+                            <tr {...headerGroup.getHeaderGroupProps()}>
+                                {headerGroup.headers.map(column => (
+                                    <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+                                ))}
+                            </tr>
+                        ))}
+                    </thead>
+                    <tbody {...getTableBodyProps()}>
+                        {rows.map((row, i) => {
+                            prepareRow(row);
+                            return (
+                                <tr key={row.id} {...getTableBodyProps()}>
+                                    {row.cells.map(cell => {
+                                        return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
+                                    })}
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
             </pre>
         </div>
     );

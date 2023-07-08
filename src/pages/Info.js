@@ -1,19 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from '../Header'
 import { useParams } from 'react-router-dom';
 
 export default function Info() {
-    const { recipe_id } = useParams();
+    const { id } = useParams();
     const [data, setData] = useState([]);
-    const recipeGet = () => {
-        fetch('http://localhost:8180/recipe/{recipe_id}')
+    const recipeGet = (e) => {
+        fetch('http://localhost:8180/recipe/'+e)
         .then((response) => response.json())
         .then((json) => {
-            // console.log(json);
+            console.log(json);
             setData(json);
         });
 //        setState();
     };
+    useEffect(() => {
+        recipeGet(id);
+    }, []);
 
     return (
         <>

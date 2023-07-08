@@ -48,7 +48,7 @@ export default class Header extends Component {
             default font weights and sizes */}
 
             <nav>
-              <a href="home">
+              <a href="/home">
                 <svg
                   id="logo-88"
                   width="40"
@@ -76,11 +76,11 @@ export default class Header extends Component {
               <div>
                 <ul id="navbar" className={this.state.clicked | this.state.page ?
                 "#navbar active" : "#navbar"}>
-                  <li><a className={this.props.link === 'home' ? 'active' : ''} href="home">Home</a></li>
-                  <li><a className={this.props.link === 'shop' ? 'active' : ''} href="shop">Shop</a></li>
-                  <li><a className={this.props.link === 'blog' ? 'active' : ''} href="blog">Blog</a></li>
-                  <li><a className={this.props.link === 'about' ? 'active' : ''} href="about">About</a></li>
-                  <li><a className={this.props.link === 'contact' ? 'active' : ''} href="contact">Contact</a></li>
+                  <li><a className={this.props.link === 'home' ? 'active' : ''} href="/home">Home</a></li>
+                  <li><a className={this.props.link === 'shop' ? 'active' : ''} href="/shop">Shop</a></li>
+                  <li><a className={this.props.link === 'blog' ? 'active' : ''} href="/blog">Blog</a></li>
+                  <li><a className={this.props.link === 'about' ? 'active' : ''} href="/about">About</a></li>
+                  <li><a className={this.props.link === 'contact' ? 'active' : ''} href="/contact">Contact</a></li>
                 </ul>
               </div>
 
