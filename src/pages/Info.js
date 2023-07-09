@@ -11,6 +11,20 @@ export default function Info() {
         .then((json) => {
             console.log(json);
             setData(json);
+        })
+        .catch(error => {
+            if (typeof error.json === "function") {
+                error.json().then(jsonError => {
+                    console.log("Json error from API");
+                    console.log(jsonError);
+                }).catch(genericError => {
+                    console.log("Generic error from API");
+                    console.log(error.statusText);
+                });
+            } else {
+                console.log("Fetch error");
+                console.log(error);
+            }
         });
 //        setState();
     };

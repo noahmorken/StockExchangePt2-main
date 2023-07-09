@@ -87,7 +87,7 @@ function FetchList() {
                             return (
                                 <tr key={row.id} {...getTableBodyProps()}>
                                     {row.cells.map(cell => {
-                                        return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
+                                        return <li><td {...cell.getCellProps()} href={'/info/${row.id}'}>{cell.render("Cell")}</td></li>;
                                     })}
                                 </tr>
                             );

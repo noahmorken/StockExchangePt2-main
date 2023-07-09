@@ -1,103 +1,130 @@
-import React, { useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import './FetchApi.css'
+import axios from "axios";
+import { useTable } from "react-table";
 
 function FetchAPI() {
     const [hidden, setHidden] = useState(true);
     const [data, setData] = useState([]);
     const apiGet = () => {
-        fetch('http://localhost:8180/recipe/list')
-        .then((response) => response.json())
-        .then((json) => {
-            // console.log(json);
-            setData(json[json.length-1]);
-            setHidden(!hidden);
-        });
-//        setState();
-
+        setHidden(!hidden);
     };
 
-    // const state = {
-    //     showMessage: false
-    // }
-    // function setState() {
-    //     this.setState({showMessage: !this.state.showMessage});
-    // }
+    useEffect(() => {
+        (async () => {
+            const result = await axios("http://localhost:8180/recipe/list");
+            setData(result.data[result.data.length-1]);
+            console.log(result.data);
+        })();
+    }, []);
+
+    const columns = useMemo(
+        () => [
+            {
+                // First group - Recipe ID
+                Header: "Recipe",
+                // First group columns
+                columns: [
+                    {
+                        Header: "Recipe ID",
+                        accessor: "id",
+                    },
+                    {
+                        Header: "Variation ID",
+                        accessor: "variation",
+                    },
+                ],
+            },
+            {
+                // Second group - Details
+                Header: "Details",
+                // Second group columns
+                columns: [
+                    {
+                        Header: "Title",
+                        accessor: "name",
+                    },
+                    {
+                        Header: "Date Created",
+                        accessor: "date",
+                    },
+                ],
+            },
+            {
+                // Third group - Ingredients
+                Header: "Ingredients",
+                // Third group columns
+                columns: [
+                    {
+                        Header: "Name",
+                        accessor: "name",
+                    },
+                    {
+                        Header: "Quantity",
+                        accessor: "date",
+                    },
+                    {
+                        Header: "Unit of Measurement",
+                        accessor: "date",
+                    },
+                ],
+            },
+            {
+                // Fourth group - Ingredients
+                Header: "Steps",
+                // Fourth group columns
+                columns: [
+                    {
+                        Header: "Description",
+                        accessor: "name",
+                    },
+                ],
+            },
+        ],
+        []
+    );
+
+    const {
+        getTableProps,
+        getTableBodyProps,
+        headerGroups,
+        rows,
+        prepareRow
+    } = useTable({
+        columns,
+        data
+    });
 
     return (
         <div>
-            My API <br />
+            Fetch API <br />
             <button onClick={apiGet}>Fetch API</button>
             <br />
-            {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
             <pre hidden={hidden} >
-                <p>Recipe ID: {data.id}</p>
-                <p>Variation ID: {data.variation}</p>
-                <p>Date: {data.date}</p>
-                <p>Name: {data.name}</p>
-                <p>Intro: {data.intro}</p>
-                <p>Status: {data.status}</p>
-                <div>Ingredients:
-                    <ul>
-                        <>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Order</th>
-                                        <th>Name</th>
-                                        <th>Quantity</th>
-                                        <th>UOM</th>
-                                    </tr>
-                                </thead>
-                                {data.ingredients && data.ingredients.map((item) => {
-                                    console.log("item: "+item);
-                                    return (
-                                        <tbody>
-                                            <tr>
-                                                <td>{item.ingredient_order}</td>
-                                                <td>{item.ingredient}</td>
-                                                <td>{item.ingredient_quantity}</td>
-                                                <td>{item.ingredient_uom}</td>
-                                            </tr>
-                                        </tbody>
-                                    )
-                                })}
-                            </table>
-                        </>
-                    </ul>
-                </div>
-                <div>Steps:
-                    <ul>
-                        <>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Order</th>
-                                        <th>Content</th>
-                                    </tr>
-                                </thead>
-                                {data.steps && data.steps.map((item) => {
-                                    console.log(item);
-                                    return (
-                                        <tbody>
-                                            <tr>
-                                                <td>{item.step_order}</td>
-                                                <td>{item.step}</td>
-                                            </tr>
-                                        </tbody>
-                                    )
-                                })}
-                            </table>
-                        </>
-                    </ul>
-                </div>
+                <table {...getTableProps()}>
+                    <thead>
+                        {headerGroups.map(headerGroup => (
+                            <tr {...headerGroup.getHeaderGroupProps()}>
+                                {headerGroup.headers.map(column => (
+                                    <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+                                ))}
+                            </tr>
+                        ))}
+                    </thead>
+                    <tbody {...getTableBodyProps()}>
+                        {rows.map((row, i) => {
+                            prepareRow(row);
+                            return (
+                                <tr key={row.id} {...getTableBodyProps()}>
+                                    {row.cells.map(cell => {
+                                        return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
+                                    })}
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
             </pre>
-            <div>
-                {/* <ul>
-                    {data.map((item) => (
-                        <li key={item.id}>{item.user},{item.title}</li>
-                    ))}
-                    </ul>*/}
-            </div>
         </div>
     );
 }

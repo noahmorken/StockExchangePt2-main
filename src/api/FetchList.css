@@ -21,6 +21,6 @@ td {
     cursor: pointer;
 }
 
-tr:hover {
+td:hover {
     background-color: bisque;
 }
