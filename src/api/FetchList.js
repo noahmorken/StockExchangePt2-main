@@ -2,10 +2,13 @@ import React, { useMemo, useState, useEffect } from "react";
 import './FetchList.css'
 import axios from "axios";
 import { useTable } from "react-table";
+import { useNavigate } from 'react-router-dom';
 
 function FetchList() {
     const [hidden, setHidden] = useState(true);
     const [data, setData] = useState([]);
+    const navigate = useNavigate();
+
     const listGet = () => {
         setHidden(!hidden);
     };
@@ -84,10 +87,11 @@ function FetchList() {
                     <tbody {...getTableBodyProps()}>
                         {rows.map((row, i) => {
                             prepareRow(row);
+                            console.log(JSON.stringify(row.values));
                             return (
                                 <tr key={row.id} {...getTableBodyProps()}>
                                     {row.cells.map(cell => {
-                                        return <li><td {...cell.getCellProps()} href={'/info/${row.id}'}>{cell.render("Cell")}</td></li>;
+                                        return <td {...cell.getCellProps()} onClick={() => navigate(row.values.url)} >{cell.render("Cell")}</td>;
                                     })}
                                 </tr>
                             );

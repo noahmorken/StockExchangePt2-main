@@ -13,8 +13,8 @@ function FetchAPI() {
     useEffect(() => {
         (async () => {
             const result = await axios("http://localhost:8180/recipe/list");
-            setData(result.data[result.data.length-1]);
-            console.log(result.data);
+            setData([result.data[result.data.length-1]]);
+            console.log([result.data[result.data.length-1]]);
         })();
     }, []);
 
@@ -57,15 +57,15 @@ function FetchAPI() {
                 columns: [
                     {
                         Header: "Name",
-                        accessor: "name",
+                        accessor: "ingredients[0].ingredient"
                     },
                     {
                         Header: "Quantity",
-                        accessor: "date",
+                        accessor: "ingredients[0].ingredient_quantity",
                     },
                     {
                         Header: "Unit of Measurement",
-                        accessor: "date",
+                        accessor: "ingredients[0].ingredient_uom",
                     },
                 ],
             },
@@ -76,7 +76,7 @@ function FetchAPI() {
                 columns: [
                     {
                         Header: "Description",
-                        accessor: "name",
+                        accessor: "steps[0].step",
                     },
                 ],
             },

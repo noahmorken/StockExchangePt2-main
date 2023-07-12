@@ -11,6 +11,7 @@ const SubmissionForm = () => {
     // const [ingredientUOM, setIngredientUOM] = useState([]);
     // const [step, setStep] = useState('');
     //const [status, setStatus] = useState('');
+    const [url, setUrl] = useState('');
     const [gluten, setGluten] = useState(false);
     const [dairy, setDairy] = useState(false);
     const [selected, setSelected] = useState('');
@@ -85,6 +86,9 @@ const SubmissionForm = () => {
         else if(status === "Choose One") {
             alert("Status cannot be blank!")
         }
+        else if(url.length === 0) {
+            alert("URL cannot be blank!");
+        }
         else{
             alert("All set!");
             
@@ -98,7 +102,7 @@ const SubmissionForm = () => {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({name, intro, ingredients, steps, status, variation})
+                    body: JSON.stringify({name, intro, ingredients, steps, status, variation, url})
                 }
             )
             .then(response => {
@@ -220,6 +224,7 @@ const SubmissionForm = () => {
             Private<input type="radio" name="selected" value="radio2" onChange={e=>setSelected(e.target.value)} />
             Gluten Free?<input type="checkbox" value="gluten" onChange={(e) => setGluten(e.target.checked)} />
             Dairy Free?<input type="checkbox" value="dairy" onChange={(e) => setDairy(e.target.checked)} />
+            <input type="text" name="url" id="" placeholder="alternate URL" value={url} onChange={(e) => setUrl(e.target.value)} />
             <button type="button" name="send" id="send" value ="SEND" onClick={(handleSubmit)}>Send</button>
             
         </form>

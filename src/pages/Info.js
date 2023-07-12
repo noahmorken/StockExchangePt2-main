@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Header from '../Header'
 import { useParams } from 'react-router-dom';
+import './Info.css'
 
 export default function Info() {
     const { id } = useParams();
@@ -33,7 +34,7 @@ export default function Info() {
     }, []);
 
     return (
-        <>
+/*         <>
             <Header link={"info"} />
             <h2>Recipe Information</h2>
             <p>Recipe ID: {data.id}</p>
@@ -96,6 +97,32 @@ export default function Info() {
                         </>
                     </ul>
                 </div>
+        </> */
+        <>
+            <Header />
+            <dil>
+                <h1 style={{color: "red"}}>{data.name}</h1>
+                <h3>Introduction: {data.intro}</h3>
+                <h3>Ingredients you'll need:</h3>
+                {data.ingredients && data.ingredients.map((item) => {
+                    if(item.ingredient_uom) {
+                        return (
+                            <h4>{item.ingredient}, {item.ingredient_quantity} {item.ingredient_uom}</h4>
+                        )
+                    }
+                    else {
+                        return (
+                            <h4>{item.ingredient_quantity} {item.ingredient}</h4>
+                        )
+                    }
+                })}
+                <h3>Steps:</h3>
+                {data.steps && data.steps.map((item) => {
+                    return (
+                        <h4>Step #{item.step_order}: {item.step}</h4>
+                    )
+                })}
+            </dil>
         </>
     );
 }
