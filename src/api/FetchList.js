@@ -51,6 +51,10 @@ function FetchList() {
                         Header: "Date Created",
                         accessor: "date",
                     },
+                    {
+                        Header: "URL",
+                        accessor: "url",
+                    },
                 ],
             },
         ],
@@ -87,14 +91,24 @@ function FetchList() {
                     <tbody {...getTableBodyProps()}>
                         {rows.map((row, i) => {
                             prepareRow(row);
-                            console.log(JSON.stringify(row.values));
-                            return (
-                                <tr key={row.id} {...getTableBodyProps()}>
-                                    {row.cells.map(cell => {
-                                        return <td {...cell.getCellProps()} onClick={() => navigate(row.values.url)} >{cell.render("Cell")}</td>;
-                                    })}
-                                </tr>
-                            );
+                            console.log(JSON.stringify(row.values.url));
+                                return (
+                                    <tr key={row.id} {...getTableBodyProps()}>
+                                        {row.cells.map(cell => {
+                                            return <td {...cell.getCellProps()} 
+                                                onClick={() => 
+                                                    {if (row.values.url.startsWith("/")) {
+                                                        navigate(row.values.url)
+                                                    }
+                                                    else {
+                                                        window.location.href = row.values.url;
+                                                    }
+                                                    }
+                                                    } >
+                                                {cell.render("Cell")}</td>;
+                                        })}
+                                    </tr>
+                                );
                         })}
                     </tbody>
                 </table>

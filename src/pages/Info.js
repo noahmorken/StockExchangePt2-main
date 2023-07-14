@@ -12,6 +12,9 @@ export default function Info() {
         .then((json) => {
             console.log(json);
             setData(json);
+            if (!json.ok) {
+                throw new Error();
+            }
         })
         .catch(error => {
             if (typeof error.json === "function") {
@@ -25,11 +28,30 @@ export default function Info() {
             } else {
                 console.log("Fetch error");
                 console.log(error);
+
             }
         });
 //        setState();
     };
     useEffect(() => {
+        /* if (id === parseInt(id, 10)){
+            recipeGet(id);
+        }
+        else {
+            (async () => {
+                const result = await axios("http://localhost:8180/recipe/list");
+                setData(result.data);
+                console.log(result.data);
+                {result.data && result.data.map((item) => {
+                    console.log(item.url);
+                    if(JSON.stringify(id) === JSON.stringify(item.url)) {
+                        console.log("Match found!");
+                        let r_id = item.recipe_id;
+                        recipeGet(r_id);
+                    }
+                })}
+            })();
+        } */
         recipeGet(id);
     }, []);
 
@@ -100,7 +122,6 @@ export default function Info() {
         </> */
         <>
             <Header />
-            <dil>
                 <h1 style={{color: "red"}}>{data.name}</h1>
                 <h3>Introduction: {data.intro}</h3>
                 <h3>Ingredients you'll need:</h3>
@@ -122,7 +143,6 @@ export default function Info() {
                         <h4>Step #{item.step_order}: {item.step}</h4>
                     )
                 })}
-            </dil>
         </>
     );
 }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import './SubmissionForm.css'
+import validator from 'validator';
 // import Dropdown from "./Dropdown";
 
 const SubmissionForm = () => {
@@ -21,6 +22,7 @@ const SubmissionForm = () => {
     const [steps, setSteps] = useState([{
         step_order: "", step: ""
     }]);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleChange = e => {
         if (e.target.id === "add_ingredient" && ingredients.length < 20) {
@@ -47,7 +49,18 @@ const SubmissionForm = () => {
         }
     }
 
+    const validate = (value) => {
+        if (validator.isURL(value)) {
+            setErrorMessage("Valid URL!");
+            setUrl(value);
+        }
+        else {
+            setErrorMessage("Invalid URL.");
+        }
+    }
+
     const handleSubmit = () => {
+        validate(url);
         var variation = 0;
         if (gluten) {
             variation += 1;
@@ -88,6 +101,9 @@ const SubmissionForm = () => {
         }
         else if(url.length === 0) {
             alert("URL cannot be blank!");
+        }
+        else if(errorMessage === "Invalid URL.") {
+            alert("URL is not valid!");
         }
         else{
             alert("All set!");
@@ -224,6 +240,8 @@ const SubmissionForm = () => {
             Private<input type="radio" name="selected" value="radio2" onChange={e=>setSelected(e.target.value)} />
             Gluten Free?<input type="checkbox" value="gluten" onChange={(e) => setGluten(e.target.checked)} />
             Dairy Free?<input type="checkbox" value="dairy" onChange={(e) => setDairy(e.target.checked)} />
+            
+            <h2>URL</h2>
             <input type="text" name="url" id="" placeholder="alternate URL" value={url} onChange={(e) => setUrl(e.target.value)} />
             <button type="button" name="send" id="send" value ="SEND" onClick={(handleSubmit)}>Send</button>
             
