@@ -6,9 +6,17 @@
     align-items: center;
 }
 
-table {
+.parent {
+    display: flex;
+}
+
+.leftNav {
+    width: 200px;
+}
+
+.leftNav table {
     border: 2px solid forestgreen;
-    width: 800px;
+    width: 200px;
     height: 200px;
 }
 
@@ -18,6 +26,19 @@ th {
 
 td {
     text-align: center;
+    cursor: pointer;
+}
+
+form button{
+    display: flex;
+    flex-direction: column;
+    margin: 10px auto;
+    height: 30px;
+    width: 80px;
+    align-items: center;
+    border: none;
+    background-color: rgb(29, 185, 237);
+    color: #fff;
     cursor: pointer;
 }
 

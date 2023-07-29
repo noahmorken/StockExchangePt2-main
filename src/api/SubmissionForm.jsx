@@ -1,17 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './SubmissionForm.css'
 import validator from 'validator';
+import { useNavigate } from 'react-router-dom';
 // import Dropdown from "./Dropdown";
 
 const SubmissionForm = () => {
+    // const [hidden, setHidden] = useState(true);
     const [name, setName] = useState('');
-    //const [variation, setVariation] = useState('');
     const [intro, setIntro] = useState('');
-    // const [ingredient, setIngredient] = useState([]);
-    // const [ingredientQuantity, setIngredientQuantity] = useState([]);
-    // const [ingredientUOM, setIngredientUOM] = useState([]);
-    // const [step, setStep] = useState('');
-    //const [status, setStatus] = useState('');
     const [url, setUrl] = useState('');
     const [gluten, setGluten] = useState(false);
     const [dairy, setDairy] = useState(false);
@@ -23,6 +19,11 @@ const SubmissionForm = () => {
         step_order: "", step: ""
     }]);
     const [errorMessage, setErrorMessage] = useState('');
+    const navigate = useNavigate();
+    /* const listGet = () => {
+        setHidden(!hidden);
+    };
+    const [data, setData] = useState([]); */
 
     const handleChange = e => {
         if (e.target.id === "add_ingredient" && ingredients.length < 20) {
@@ -31,28 +32,33 @@ const SubmissionForm = () => {
                 {ingredient_order: "", ingredient: "", ingredient_quantity: "", ingredient_uom: ""}
             ])
         }
-        if (e.target.id === "remove_ingredient" && ingredients.length > 1) {
+        /* if (e.target.id === "remove_ingredient" && ingredients.length > 1) {
             setIngredients(
                 ingredients.slice(0, -1)
             )
-        }
+        } */
         if (e.target.id === "add_step" && steps.length < 20) {
             setSteps([
                 ...steps,
                 {step_order: "", step: ""}
             ])
         }
-        if (e.target.id === "remove_step" && steps.length > 1) {
+        /* if (e.target.id === "remove_step" && steps.length > 1) {
             setSteps(
                 steps.slice(0, -1)
             )
-        }
+        } */
     }
 
     const validate = (value) => {
-        if (validator.isURL(value)) {
+        if (url.length === 0 || validator.isURL(value)) {
             setErrorMessage("Valid URL!");
-            setUrl(value);
+            if (validator.isURL(value)) {
+                setUrl(value);
+            }
+            else {
+                setUrl(null);
+            }
         }
         else {
             setErrorMessage("Invalid URL.");
@@ -99,15 +105,19 @@ const SubmissionForm = () => {
         else if(status === "Choose One") {
             alert("Status cannot be blank!")
         }
-        else if(url.length === 0) {
-            alert("URL cannot be blank!");
-        }
         else if(errorMessage === "Invalid URL.") {
             alert("URL is not valid!");
         }
         else{
+            for(var i = 0;  i < ingredients.length; i++) {
+                const match = ingredients[i].ingredient_quantity.match(/[1-9][0-9]*(?:\/[1-9][0-9])/g);
+                if(match != null) {
+                    alert("Invalid ingredient quantity!")
+                    break;
+                }
+            }
+
             alert("All set!");
-            
 
             //ingredients.ingredientUOM.replace(/[^a-z]/gi, '');
             console.log(ingredients);
@@ -122,14 +132,15 @@ const SubmissionForm = () => {
                 }
             )
             .then(response => {
+                console.log(response);
                 if (!response.ok) {
                     alert("An error occured.");
                 }
                 else {
                     alert("Recipe added!");
+                    window.location.reload(true);
                 }
             });
-
 
             // const formData  = new FormData();
             // formData.append("name", name);
@@ -197,6 +208,24 @@ const SubmissionForm = () => {
         setSteps(nextSteps);
     }
 
+    function removeIng(ingId) {
+        var newIngredients = ingredients.slice();
+        newIngredients.splice(ingId, 1);
+        setIngredients(newIngredients);
+    }
+
+    function removeStep(stepId) {
+        var newSteps = steps.slice();
+        newSteps.splice(stepId, 1);
+        setSteps(newSteps);
+    }
+
+    useEffect(() => {
+        (async () => {
+            navigate("/shop");
+        })();
+    }, []);
+
     return (
         <form>
             <h1>New <span>Recipe</span></h1>
@@ -206,13 +235,15 @@ const SubmissionForm = () => {
             <h2>Ingredients</h2>
             {ingredients.map((item, i) => {
             return (
-                <div key={i} className="ingredientBox">
+                <div key={i} className="side-by-side">
                     <textarea name="ingredient" placeholder="Ingredient" value={item.ingredient}
                             onChange={(e) => handleIngredientUpdate(i, "ing", e.target.value)} />
-                    <input type="number" name="ingredient_quantity" placeholder="Ingredient Quantity"
+                    <input type="text" name="ingredient_quantity" placeholder="Quantity"
                             value={item.ingredient_quantity} onChange={(e) => handleIngredientUpdate(i, "num", e.target.value)} />
-                    <input type="text" name="ingredient_uom" placeholder="Ingredient Unit of Measurement"
+                    <input type="text" name="ingredient_uom" placeholder="Units"
                             value={item.ingredient_uom} onChange={(e) => handleIngredientUpdate(i, "unit", e.target.value)} />
+                    <button type="button" id="remove_ingredient" style={{visibility: ingredients.length === 1 ? "hidden" : "visible"}}
+                            onClick={(e) => removeIng(i)}>Remove Ingredient</button>
                     {/* <textarea name="ingredient" id="" placeholder="Ingredient" value={ingredient[item]} onChange={(e) => setIngredient(e.target.value)} />
                     <input type="number" name="ingredient_quantity" id="" placeholder="Ingredient Quantity" value={ingredientQuantity[item]} onChange={(e) => setIngredientQuantity(e.target.value)} />
                     <input type="text" name="ingredient_uom" id="" placeholder="Ingredient Unit of Measurement" value={ingredientUOM[item]} onChange={(e) => setIngredientUOM(e.target.value)} /> */}
@@ -220,27 +251,42 @@ const SubmissionForm = () => {
             )})}
 
             <button type="button" id="add_ingredient" style={{visibility: ingredients.length === 20 ? "hidden" : "visible"}} onClick={(handleChange)}>Add Ingredient</button>
-            <button type="button" id="remove_ingredient" style={{visibility: ingredients.length === 1 ? "hidden" : "visible"}} onClick={(handleChange)}>Remove Ingredient</button>
 
             <h2>Steps</h2>
             {steps.map((item, i) => {
             return (
-                <div key={i} className="stepBox">
+                <div key={i} className="side-by-side">
                     <textarea name="step" id="" cols="30" rows="10" placeholder="Step"
                             value={item.step} onChange={(e) => handleStepUpdate(i, "step", e.target.value)} />
+                    <button type="button" id="remove_step" style={{visibility: steps.length === 1 ? "hidden" : "visible"}}
+                            onClick={(e) => removeStep(i)}>Remove Step</button>
                 </div>
             )})}
 
-                <button type="button" id="add_step" style={{visibility: steps.length === 20 ? "hidden" : "visible"}} onClick={(handleChange)}>Add Step</button>
-                <button type="button" id="remove_step" style={{visibility: steps.length === 1 ? "hidden" : "visible"}} onClick={(handleChange)}>Remove Step</button>
+            <button type="button" id="add_step" style={{visibility: steps.length === 20 ? "hidden" : "visible"}} onClick={(handleChange)}>Add Step</button>
 
             {/* <Dropdown selected={selected} setSelected={setSelected} value={selected} onChange={(e) => setStatus(e.target.value)} /> */}
             <h2>Visibility</h2>
-            Public<input type="radio" name="selected" value="radio1" onChange={e=>setSelected(e.target.value)} />
-            Private<input type="radio" name="selected" value="radio2" onChange={e=>setSelected(e.target.value)} />
-            Gluten Free?<input type="checkbox" value="gluten" onChange={(e) => setGluten(e.target.checked)} />
-            Dairy Free?<input type="checkbox" value="dairy" onChange={(e) => setDairy(e.target.checked)} />
-            
+            <div className="side-by-side">
+                <input type="radio" name="selected" value="radio1" id="public_radio" onChange={e=>setSelected(e.target.value)} />
+                <label htmlFor="public_radio">Public</label>
+                <span className="space_expander"></span>
+            </div>
+            <div className="side-by-side">
+                <input type="radio" name="selected" value="radio2" id="private_radio" onChange={e=>setSelected(e.target.value)} />
+                <label htmlFor="private_radio">Private</label>
+                <span className="space_expander"></span>
+            </div>
+            <div className="side-by-side">
+                <input type="checkbox" value="gluten" id="gluten_free" onChange={(e) => setGluten(e.target.checked)} />
+                <label htmlFor="gluten_free">Gluten Free</label>                
+                <span className="space_expander"></span>
+            </div>
+            <div className="side-by-side">
+                <input type="checkbox" value="dairy" id="dairy_free" onChange={(e) => setDairy(e.target.checked)} />
+                <label htmlFor="dairy_free">Dairy Free</label>                
+                <span className="space_expander"></span>
+            </div>
             <h2>URL</h2>
             <input type="text" name="url" id="" placeholder="alternate URL" value={url} onChange={(e) => setUrl(e.target.value)} />
             <button type="button" name="send" id="send" value ="SEND" onClick={(handleSubmit)}>Send</button>

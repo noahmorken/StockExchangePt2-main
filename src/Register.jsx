@@ -1,9 +1,20 @@
 import React, { useState } from "react";
+import axios from 'axios';
 
 export const Register = () => {
-    const [user] = useState('');
-    const [email] = useState('');
-    const [pass] = useState('');
+    const [user, setUser] = useState('');
+    const [email, setEmail] = useState('');
+    const [pass, setPass] = useState('');
+
+    const register = () => {
+        axios.post("http://localhost:8180/user/register", {
+            username: user,
+            email: email,
+            password: pass,
+        }).then((response) => {
+            console.log(response);
+        })
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -13,15 +24,17 @@ export const Register = () => {
     return(
         <>
             <form onSubmit={handleSubmit}>
+                <h2>Register</h2>
                 <label htmlFor="username">Username</label>
-                <input value={user} type="username" placeholder="yourusername" id="username" name="username"/>
+                <input value={user} type="text" onChange={(e) => setUser(e.target.value)} placeholder="yourusername" id="username" name="username"/>
                 <label htmlFor="email">Email</label>
-                <input value={email} type="email" placeholder="youremail@email.com" id="email" name="email"/>
+                <input value={email} type="text" onChange={(e) => setEmail(e.target.value)} placeholder="youremail@email.com" id="email" name="email"/>
                 <label htmlFor="password">Password</label>
-                <input value={pass} type="password" placeholder="********" id="password" name="password"/>
-                <button type="submit">Register</button>
+                <input value={pass} type="text" onChange={(e) => setPass(e.target.value)} placeholder="********" id="password" name="password"/>
+                <button type="submit" onClick={register}>Register</button>
             </form>
-            <button>Already have an account? Log in here.</button>
         </>
     )
 }
+
+export default Register
