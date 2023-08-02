@@ -220,7 +220,7 @@ function FetchList() {
                             <h4>Step #{item.step_order + 1}: {item.step}</h4>
                         )
                     })}
-                    <iframe src={url} width="1000px" height="400px"></iframe>
+
                 </pre>
             </div>
         </div>

@@ -214,7 +214,6 @@ const ModifyForm = () => {
 
     useEffect(() => {
         (async () => {
-            navigate("/shop");
             const result = await axios("http://localhost:8180/recipe/list");
             setData(result.data);
         })();

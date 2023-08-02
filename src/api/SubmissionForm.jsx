@@ -222,7 +222,6 @@ const SubmissionForm = () => {
 
     useEffect(() => {
         (async () => {
-            navigate("/shop");
         })();
     }, []);
 
