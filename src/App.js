@@ -407,6 +407,7 @@ function App() {
 				<Route exact path="/info" element={<Info />} />
 				<Route path="/info/:id" element={<Info />} />
 				<Route path="/:url" element={<Info />} />
+				<Route path="/recipe" element={<Home />} />
 				<Route path="/login" element={<Login />} />
 				<Route path="/register" element={<Register />} />
 			</Routes>

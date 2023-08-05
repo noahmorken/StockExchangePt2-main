@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import './SubmissionForm.css'
 import validator from 'validator';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 // import Dropdown from "./Dropdown";
 
 const SubmissionForm = () => {
@@ -19,7 +19,7 @@ const SubmissionForm = () => {
         step_order: "", step: ""
     }]);
     const [errorMessage, setErrorMessage] = useState('');
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     /* const listGet = () => {
         setHidden(!hidden);
     };

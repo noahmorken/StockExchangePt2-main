@@ -1,7 +1,7 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import './FetchList.css'
 import axios from "axios";
-import { useTable } from "react-table";
+// import { useTable } from "react-table";
 // import { useNavigate } from 'react-router-dom';
 
 function FetchList() {
@@ -32,6 +32,7 @@ function FetchList() {
         })();
     }, []);
 
+    /*
     const columns = useMemo(
         () => [
             {
@@ -71,17 +72,20 @@ function FetchList() {
         ],
         []
     );
+    */
 
+    /*
     const {
-        /* getTableProps,
+        getTableProps,
         getTableBodyProps,
         headerGroups,
         rows,
-        prepareRow */
+        prepareRow
     } = useTable({
         columns,
         data
     });
+    */
 
     const showDetails = item => {
         setHide(false);
@@ -149,13 +153,20 @@ function FetchList() {
                                     </tr>
                                 </thead>
                                 {data && data.map((item) => {
-                                    return (
-                                        <tbody>
-                                            <tr onClick={() => {showDetails(item)}}>
-                                                <td>{item.name}</td>
-                                            </tr>
-                                        </tbody>
-                                    )
+                                    if (item.status === 1)  {
+                                        return (
+                                            <tbody>
+                                                <tr onClick={() => {showDetails(item)}}>
+                                                    <td style={{visibility: item.status === 1 ? "visible" : "hidden"}}>{item.name}</td>
+                                                </tr>
+                                            </tbody>
+                                        );
+                                    }
+                                    else {
+                                        return (
+                                            <tbody></tbody>
+                                        );
+                                    }
                                 })}
                             </table>
                         </>
@@ -220,6 +231,8 @@ function FetchList() {
                             <h4>Step #{item.step_order + 1}: {item.step}</h4>
                         )
                     })}
+
+                    <iframe title="recipeIframe" src={url} width="1000px" height="1000px"></iframe>
 
                 </pre>
             </div>

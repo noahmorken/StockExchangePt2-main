@@ -13,7 +13,7 @@ function loadHtml(id, filename) {
                 if (this.status == 404) {element.innerHTML = "<h1>Page not found.</h1>";}
             }
         }
-        xhttp.open("GET", `recipes/${file}`, true);
+        xhttp.open("GET", 'recipes/${file}', true);
         xhttp.send();
         return;
     }

@@ -19,7 +19,7 @@ const ModifyForm = () => {
         step_order: "", step: ""
     }]);
     const [status, setStatus] = useState('');
-    const [selected, setSelected] = useState('');
+    const [selected] = useState('');
     const [diet, setDiet] = useState(false);
     const [url, setUrl] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -120,6 +120,43 @@ const ModifyForm = () => {
         }
         else {
             setErrorMessage("Invalid URL.");
+        }
+    }
+
+    const setSelected = (value) => {
+        if (value === "radio1") {
+            setStatus(1);
+        }
+        else if (value === "radio2") {
+            setStatus(2);
+        }
+        else if (value === "check1") {
+            if (diet === 0) {
+                setDiet(1);
+            }
+            else if (diet === 1) {
+                setDiet(0);
+            }
+            else if (diet === 2) {
+                setDiet(3);
+            }
+            else if (diet === 3) {
+                setDiet(2);
+            }
+        }
+        else if (value === "check2") {
+            if (diet === 0) {
+                setDiet(2);
+            }
+            else if (diet === 1) {
+                setDiet(3);
+            }
+            else if (diet === 2) {
+                setDiet(0);
+            }
+            else if (diet === 3) {
+                setDiet(1);
+            }
         }
     }
 
@@ -288,13 +325,13 @@ const ModifyForm = () => {
                     <h2>Visibility</h2>
                     <div className="side-by-side">
                         <input type="radio" name="selected" value="radio1" id="public_radio" 
-                                checked={status === 1} onChange={e=>setSelected(e.target.value)} />
+                                checked={status === 1} onChange={e=>setSelected("radio1")} />
                         <label htmlFor="public_radio">Public</label>
                         <span className="space_expander"></span>
                     </div>
                     <div className="side-by-side">
                         <input type="radio" name="selected" value="radio2" id="private_radio"
-                                checked={status === 2} onChange={e=>setSelected(e.target.value)} />
+                                checked={status === 2} onChange={e=>setSelected("radio2")} />
                         <label htmlFor="private_radio">Private</label>
                         <span className="space_expander"></span>
                     </div>
@@ -302,13 +339,13 @@ const ModifyForm = () => {
                     <h2>Dietary Restrictions</h2>
                     <div className="side-by-side">
                         <input type="checkbox" value="gluten" id="gluten_free"
-                                checked={diet === 1 || diet === 3} onChange={(e) => setDiet(e.target.checked)} />
+                                checked={diet === 1 || diet === 3} onChange={(e) => setSelected("check1")} />
                         <label htmlFor="gluten_free">Gluten Free</label>                
                         <span className="space_expander"></span>
                     </div>
                     <div className="side-by-side">
                         <input type="checkbox" value="dairy" id="dairy_free"
-                                checked={diet === 2 || diet === 3} onChange={(e) => setDiet(e.target.checked)} />
+                                checked={diet === 2 || diet === 3} onChange={(e) => setSelected("check2")} />
                         <label htmlFor="dairy_free">Dairy Free</label>                
                         <span className="space_expander"></span>
                     </div>
