@@ -12,7 +12,12 @@ function FetchAPI() {
 
     useEffect(() => {
         (async () => {
-            const result = await axios("http://localhost:8180/recipe/list");
+            let config = {
+                headers: {
+                  "Authorization": localStorage.getItem('jwt'),
+                }
+            }    
+            const result = await axios("http://localhost:8180/recipe/list", config);
             setData([result.data[result.data.length-1]]);
             console.log([result.data[result.data.length-1]]);
         })();

@@ -25,7 +25,12 @@ function FetchList() {
 
     useEffect(() => {
         (async () => {
-            const result = await axios("http://localhost:8180/recipe/list");
+            let config = {
+                headers: {
+                  "Authorization": localStorage.getItem('jwt'),
+                }
+            }            
+            const result = await axios("http://localhost:8180/recipe/list", config);
             setData(result.data);
             console.log(result.data);
             listGet();

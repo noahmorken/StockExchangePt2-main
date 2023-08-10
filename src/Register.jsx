@@ -7,7 +7,7 @@ export const Register = () => {
     const [pass, setPass] = useState('');
 
     const register = () => {
-        axios.post("http://localhost:8180/user/register", {
+        axios.post("http://localhost:8180/api/auth/signup", {
             username: user,
             email: email,
             password: pass,

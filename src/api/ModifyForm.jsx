@@ -19,7 +19,7 @@ const ModifyForm = () => {
         step_order: "", step: ""
     }]);
     const [status, setStatus] = useState('');
-    const [selected] = useState('');
+    //const [selected] = useState('');
     const [diet, setDiet] = useState(false);
     const [url, setUrl] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -170,10 +170,11 @@ const ModifyForm = () => {
             variation += 2;
         }
 
-        var status = 1;
-        if (selected !== "radio1") {
+        // var status = 1;
+        alert(status);
+        /* if (selected !== "radio1") {
             status = 2;
-        }
+        } */
 
         var stepList = new Array([steps.length]);
         for (let i = 0; i < steps.length; i++) {
@@ -251,8 +252,14 @@ const ModifyForm = () => {
 
     useEffect(() => {
         (async () => {
-            const result = await axios("http://localhost:8180/recipe/list");
-            setData(result.data);
+            let config = {
+                headers: {
+                  "Authorization": localStorage.getItem('jwt'),
+                }
+            }    
+            const result = await axios("http://localhost:8180/recipe/list", config);
+            setData([result.data[result.data.length-1]]);
+            console.log([result.data[result.data.length-1]]);
         })();
     }, []);
 
@@ -325,27 +332,27 @@ const ModifyForm = () => {
                     <h2>Visibility</h2>
                     <div className="side-by-side">
                         <input type="radio" name="selected" value="radio1" id="public_radio" 
-                                checked={status === 1} onChange={e=>setSelected("radio1")} />
+                                checked={status === 1} onChange={e=>setSelected(e.target.value)} />
                         <label htmlFor="public_radio">Public</label>
                         <span className="space_expander"></span>
                     </div>
                     <div className="side-by-side">
                         <input type="radio" name="selected" value="radio2" id="private_radio"
-                                checked={status === 2} onChange={e=>setSelected("radio2")} />
+                                checked={status === 2} onChange={e=>setSelected(e.target.value)} />
                         <label htmlFor="private_radio">Private</label>
                         <span className="space_expander"></span>
                     </div>
 
                     <h2>Dietary Restrictions</h2>
                     <div className="side-by-side">
-                        <input type="checkbox" value="gluten" id="gluten_free"
-                                checked={diet === 1 || diet === 3} onChange={(e) => setSelected("check1")} />
+                        <input type="checkbox" value="check1" id="gluten_free"
+                                checked={diet === 1 || diet === 3} onChange={(e) => setSelected(e.target.value)} />
                         <label htmlFor="gluten_free">Gluten Free</label>                
                         <span className="space_expander"></span>
                     </div>
                     <div className="side-by-side">
-                        <input type="checkbox" value="dairy" id="dairy_free"
-                                checked={diet === 2 || diet === 3} onChange={(e) => setSelected("check2")} />
+                        <input type="checkbox" value="check2" id="dairy_free"
+                                checked={diet === 2 || diet === 3} onChange={(e) => setSelected(e.target.value)} />
                         <label htmlFor="dairy_free">Dairy Free</label>                
                         <span className="space_expander"></span>
                     </div>
