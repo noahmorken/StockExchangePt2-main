@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import './FetchList.css'
 import axios from "axios";
 // import { useTable } from "react-table";
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function FetchList() {
     const [hidden, setHidden] = useState(true);
@@ -10,6 +10,7 @@ function FetchList() {
     const [data, setData] = useState([]);
     const [name, setName] = useState('');
     const [intro, setIntro] = useState('');
+    const navigate = useNavigate();
     const [ingredients, setIngredients] = useState([{
         ingredient_order: "", ingredient: "", ingredient_quantity: "", ingredient_uom: ""
     }]);
@@ -17,7 +18,7 @@ function FetchList() {
         step_order: "", step: ""
     }]);
     const [url, setUrl] = useState('');
-    // const navigate = useNavigate();
+    const [externalContent, setExternalContent] = useState('');
 
     const listGet = () => {
         setHidden(!hidden);
@@ -30,12 +31,22 @@ function FetchList() {
                   "Authorization": localStorage.getItem('jwt'),
                 }
             }            
-            const result = await axios("http://localhost:8180/recipe/list", config);
-            setData(result.data);
-            console.log(result.data);
-            listGet();
+            axios.get("http://localhost:8180/recipe/list",
+                config,
+            )
+            .then((response) => {
+                setData(response.data);
+                console.log(response.data);
+                listGet();
+            })
+            .catch(function (error) {
+                if (error.response && error.response.data.status === 401) {
+                    alert("Unauthorized. Please log in.");
+                    navigate('/shop');
+                }
+            });
         })();
-    }, []);
+    }, []); // make useEffect run only on initial render
 
     /*
     const columns = useMemo(
@@ -100,6 +111,22 @@ function FetchList() {
         console.log(ingredients);
         setSteps(item.steps);
         setUrl(item.url);
+
+        if (item.url && item.url.startsWith("http")) {
+            // This recipe has external content; go fetch it
+            axios.get("http://localhost:8180/recipe/" + item.id, {headers:{"Authorization":localStorage.getItem('jwt')}})
+            .then((response) => {
+                console.log(response.data);
+                setExternalContent(response.data.externalContent);
+            })
+            .catch(function (error) {
+                // Shouldn't happen since we're already logged in
+                if (error.response && error.response.data.status === 401) {
+                    alert("Unauthorized. Please log in.");
+                    navigate('/shop');
+                }
+            });
+        }
     };
 
     return (
@@ -237,7 +264,8 @@ function FetchList() {
                         )
                     })}
 
-                    <iframe title="recipeIframe" src={url} width="1000px" height="1000px"></iframe>
+                    {/* <iframe title="recipeIframe" src={url} width="1000px" height="1000px"></iframe> */}
+                    <div dangerouslySetInnerHTML={{__html: externalContent}}></div>
 
                 </pre>
             </div>

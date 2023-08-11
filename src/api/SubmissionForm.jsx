@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import './SubmissionForm.css'
 import validator from 'validator';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import axios from "axios";
 // import Dropdown from "./Dropdown";
 
 const SubmissionForm = () => {
@@ -12,6 +13,7 @@ const SubmissionForm = () => {
     const [gluten, setGluten] = useState(false);
     const [dairy, setDairy] = useState(false);
     const [selected, setSelected] = useState('');
+    const navigate = useNavigate();
     const [ingredients, setIngredients] = useState([{
         ingredient_order: "", ingredient: "", ingredient_quantity: "", ingredient_uom: ""
     }]);
@@ -222,6 +224,20 @@ const SubmissionForm = () => {
 
     useEffect(() => {
         (async () => {
+            let config = {
+                headers: {
+                  "Authorization": localStorage.getItem('jwt'),
+                }
+            }
+            axios.get("http://localhost:8180/recipe/list",
+                config,
+            )
+            .catch(function (error) {
+                if (error.response && error.response.data.status === 401) {
+                    alert("Unauthorized. Please log in.");
+                    navigate('/shop');
+                }
+            });
         })();
     }, []);
 

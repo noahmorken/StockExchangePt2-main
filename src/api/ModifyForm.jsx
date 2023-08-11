@@ -257,9 +257,18 @@ const ModifyForm = () => {
                   "Authorization": localStorage.getItem('jwt'),
                 }
             }    
-            const result = await axios("http://localhost:8180/recipe/list", config);
-            setData([result.data[result.data.length-1]]);
-            console.log([result.data[result.data.length-1]]);
+            axios.get("http://localhost:8180/recipe/list",
+                config,
+            ).then((response) => {
+                setData(response.data);
+                console.log(response.data);
+            })
+            .catch(function (error) {
+                if (error.response && error.response.data.status === 401) {
+                    alert("Unauthorized. Please log in.");
+                    navigate('/shop');
+                }
+            });
         })();
     }, []);
 
